@@ -4,7 +4,12 @@ import (
 	"math"
 )
 
-func TestStub() []float64 {
+type Result struct {
+	Frequency float64
+	Distance  float64
+}
+
+func TestStub() []Result {
 
 	var xmtr_power int16 = 1000
 	var feedline_length int16 = 73
@@ -49,10 +54,12 @@ func TestStub() []float64 {
 		},
 	}
 
-	var uncontrolled_safe_distances []float64
+	var uncontrolled_safe_distances []Result
 
 	for _, f := range all_frequency_values {
-		uncontrolled_safe_distances = append(uncontrolled_safe_distances, CalculateUncontrolledSafeDistance(f, c1, xmtr_power, feedline_length, duty_cycle, per_30))
+		distance := CalculateUncontrolledSafeDistance(f, c1, xmtr_power, feedline_length, duty_cycle, per_30)
+
+		uncontrolled_safe_distances = append(uncontrolled_safe_distances, Result{Frequency: f.freq, Distance: distance})
 	}
 
 	return uncontrolled_safe_distances
