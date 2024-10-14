@@ -2,12 +2,13 @@ package main
 
 import (
 	"database/sql"
-	"exposure-web/rfexposure"
+	//"exposure-web/rfexposure"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
 	"html/template"
 	"log"
 	"net/http"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var db *sql.DB
