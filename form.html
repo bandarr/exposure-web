@@ -7,13 +7,34 @@
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <!-- <form action="/submit" method="post">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
-        <input type="submit" value="Submit">
-    </form> -->
+       <div class="container">
+        <h2>Input Your Parameters</h2>
+        <form>
+            <h3>Cable Values</h3>
+            <div class="form-group">
+                <label for="k1">k1 (float64):</label>
+                <input type="text" id="k1" name="k1">
+            </div>
+            <div class="form-group">
+                <label for="k2">k2 (float64):</label>
+                <input type="text" id="k2" name="k2">
+            </div>
+            <h3>Frequency Values</h3>
+            <div class="form-group">
+                <label for="freq">Frequency (float64):</label>
+                <input type="text" id="freq" name="freq">
+            </div>
+            <div class="form-group">
+                <label for="swr">SWR (float64):</label>
+                <input type="text" id="swr" name="swr">
+            </div>
+            <div class="form-group">
+                <label for="gaindbi">Gain (dBi) (float64):</label>
+                <input type="text" id="gaindbi" name="gaindbi">
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
 
     <h2>Uncontrolled Safe Distance:</h2>
     <ul>
