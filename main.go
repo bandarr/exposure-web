@@ -38,11 +38,11 @@ func formHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, data)
 }
 
-// func submitHandler(w http.ResponseWriter, r *http.Request) {
-// 	if r.Method != http.MethodPost {
-// 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-// 		return
-// 	}
+func submitHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
 
 // 	name := r.FormValue("name")
 // 	email := r.FormValue("email")
@@ -62,7 +62,7 @@ func main() {
 	//	defer db.Close()
 
 	http.HandleFunc("/", formHandler)
-	//	http.HandleFunc("/submit", submitHandler)
+	http.HandleFunc("/submit", submitHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	fmt.Println("Server started at :8080")
