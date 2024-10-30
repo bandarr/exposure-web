@@ -12,7 +12,7 @@
 <body>
   <div class="container">
     <h2>Input Your Parameters</h2>
-    <form>
+    <form action="/submit" method="POST">
       <h3>Cable Values</h3>
       <div class="form-group">
         <label for="k1">k1:</label>
@@ -58,7 +58,7 @@
 
   <h2>Uncontrolled Safe Distance:</h2>
   <ul>
-    {{range .}}
+    {{range .results}}
     <li>Frequency: {{.Frequency}}, Distance: {{.Distance}}</li>
     {{end}}
   </ul>
