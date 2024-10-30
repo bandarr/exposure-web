@@ -19,24 +19,9 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
-
-	// Uncomment and implement the following lines if database functionality is required.
-	// name := r.FormValue("name")
-	// email := r.FormValue("email")
-	// insertSQL := `INSERT INTO users (name, email) VALUES (?, ?)`
-	// _, err := db.Exec(insertSQL, name, email)
-	// if err != nil {
-	// 	http.Error(w, "Unable to save data", http.StatusInternalServerError)
-	// 	return
-	// }
-	// fmt.Fprintf(w, "Form submitted successfully!")
 }
 
 func main() {
-	// Uncomment the following lines if database initialization is required.
-	// initDB()
-	// defer db.Close()
-
 	http.HandleFunc("/", formHandler)
 	http.HandleFunc("/submit", submitHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
