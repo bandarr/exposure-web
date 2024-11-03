@@ -1,6 +1,7 @@
 package rfexposure
 
 import (
+	"errors"
 	"math"
 )
 
@@ -17,40 +18,40 @@ func TestStub() []Result {
 	var per_30 float64 = 0.5
 
 	c1 := CableValues{
-		k1: 0.122290,
-		k2: 0.000260,
+		K1: 0.122290,
+		K2: 0.000260,
 	}
 
 	all_frequency_values := []FrequencyValues{
 		{
-			freq:    7.3,
-			swr:     2.25,
-			gaindbi: 1.5,
+			Freq:    7.3,
+			SWR:     2.25,
+			GainDBI: 1.5,
 		},
 		{
-			freq:    14.35,
-			swr:     1.35,
-			gaindbi: 1.5,
+			Freq:    14.35,
+			SWR:     1.35,
+			GainDBI: 1.5,
 		},
 		{
-			freq:    18.1,
-			swr:     3.7,
-			gaindbi: 1.5,
+			Freq:    18.1,
+			SWR:     3.7,
+			GainDBI: 1.5,
 		},
 		{
-			freq:    21.45,
-			swr:     4.45,
-			gaindbi: 1.5,
+			Freq:    21.45,
+			SWR:     4.45,
+			GainDBI: 1.5,
 		},
 		{
-			freq:    24.99,
-			swr:     4.1,
-			gaindbi: 1.5,
+			Freq:    24.99,
+			SWR:     4.1,
+			GainDBI: 1.5,
 		},
 		{
-			freq:    29.7,
-			swr:     2.18,
-			gaindbi: 4.5,
+			Freq:    29.7,
+			SWR:     2.18,
+			GainDBI: 4.5,
 		},
 	}
 
@@ -59,21 +60,21 @@ func TestStub() []Result {
 	for _, f := range all_frequency_values {
 		distance := CalculateUncontrolledSafeDistance(f, c1, xmtr_power, feedline_length, duty_cycle, per_30)
 
-		uncontrolled_safe_distances = append(uncontrolled_safe_distances, Result{Frequency: f.freq, Distance: distance})
+		uncontrolled_safe_distances = append(uncontrolled_safe_distances, Result{Frequency: f.Freq, Distance: distance})
 	}
 
 	return uncontrolled_safe_distances
 }
 
 type CableValues struct {
-	k1 float64
-	k2 float64
+	K1 float64
+	K2 float64
 }
 
 type FrequencyValues struct {
-	freq    float64
-	swr     float64
-	gaindbi float64
+	Freq    float64
+	SWR     float64
+	GainDBI float64
 }
 
 func CalculateUncontrolledSafeDistance(freq_values FrequencyValues, cable_values CableValues, transmitter_power int16,
@@ -99,15 +100,15 @@ func CalculateUncontrolledSafeDistance(freq_values FrequencyValues, cable_values
 
 	uncontrolled_average_pep := peak_envelope_power_at_antenna * duty_cycle * uncontrolled_percentage_30_minutes
 
-	mpe_s := 180 / (math.Pow(freq_values.freq, 2))
+	mpe_s := 180 / (math.Pow(freq_values.Freq, 2))
 
-	gain_decimal := math.Pow(10, freq_values.gaindbi/10)
+	gain_decimal := math.Pow(10, freq_values.GainDBI/10)
 
 	return math.Sqrt((0.219 * uncontrolled_average_pep * gain_decimal) / mpe_s)
 }
 
 func CalculateReflectionCoefficient(freq_values FrequencyValues) float64 {
-	return math.Abs(float64((freq_values.swr - 1) / (freq_values.swr + 1)))
+	return math.Abs(float64((freq_values.SWR - 1) / (freq_values.SWR + 1)))
 }
 
 func CalculateFeedlineLossForMatchedLoadAtFrequency(feedline_length int16, feedline_loss_per_100ft_at_frequency float64) float64 {
@@ -119,7 +120,7 @@ func CalculateFeedlineLossForMatchedLoadAtFrequencyPercentage(feedline_loss_for_
 }
 
 func CalculateFeedlineLossPer100ftAtFrequency(freq_values FrequencyValues, cable_values CableValues) float64 {
-	return cable_values.k1 * (math.Sqrt(freq_values.freq + cable_values.k2*freq_values.freq))
+	return cable_values.K1 * (math.Sqrt(freq_values.Freq + cable_values.K2*freq_values.Freq))
 }
 
 func CalculateFeedlineLossForSWR(feedline_loss_for_matched_load_percentage float64, gamma_squared float64) float64 {
@@ -129,4 +130,28 @@ func CalculateFeedlineLossForSWR(feedline_loss_for_matched_load_percentage float
 
 func CalculateFeedlineLossForSWRPercentage(feedline_loss_for_swr float64) float64 {
 	return (100 - 100/(math.Pow(10, feedline_loss_for_swr/10))) / 100
+}
+
+func ValidateParameters(freq_values FrequencyValues, cable_values CableValues, transmitter_power int16,
+	feedline_length int16, duty_cycle float64, uncontrolled_percentage_30_minutes float64) error {
+
+	if freq_values.Freq <= 0 {
+		return errors.New("frequency must be greater than 0")
+	}
+	if cable_values.K1 < 0 || cable_values.K2 < 0 {
+		return errors.New("cable values must be non-negative")
+	}
+	if transmitter_power <= 0 {
+		return errors.New("transmitter power must be greater than 0")
+	}
+	if feedline_length <= 0 {
+		return errors.New("feedline length must be greater than 0")
+	}
+	if duty_cycle < 0 || duty_cycle > 1 {
+		return errors.New("duty cycle must be between 0 and 1")
+	}
+	if uncontrolled_percentage_30_minutes < 0 || uncontrolled_percentage_30_minutes > 1 {
+		return errors.New("uncontrolled percentage must be between 0 and 1")
+	}
+	return nil
 }
