@@ -10,10 +10,7 @@ import (
 )
 
 func formHandler(c *gin.Context) {
-	data := rfexposure.TestStub()
-	c.HTML(http.StatusOK, "form.html", gin.H{
-		"results": data,
-	})
+	c.HTML(http.StatusOK, "form.html", nil)
 }
 
 func main() {
@@ -29,7 +26,7 @@ func main() {
 }
 
 type FormInput struct {
-	Frequency                       string `form:"frequency" binding:"required"`
+	Frequency                       string `form:"freq" binding:"required"`
 	SWR                             string `form:"swr" binding:"required"`
 	GainDBI                         string `form:"gaindbi" binding:"required"`
 	K1                              string `form:"k1" binding:"required"`
@@ -127,8 +124,13 @@ func submitHandler(c *gin.Context) {
 	}
 
 	// Execute CalculateUncontrolledSafeDistance
-	distance := rfexposure.CalculateUncontrolledSafeDistance(freqValues, cableValues, transmitterPower, feedlineLength, dutyCycle, uncontrolledPercentage30Minutes)
+	result, err := rfexposure.CalculateUncontrolledSafeDistance(freqValues, cableValues, transmitterPower, feedlineLength, dutyCycle, uncontrolledPercentage30Minutes)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	// Return the result
-	c.JSON(http.StatusOK, gin.H{"distance": distance})
+	c.JSON(http.StatusOK, gin.H{"result": result})
 }

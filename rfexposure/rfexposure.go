@@ -10,61 +10,61 @@ type Result struct {
 	Distance  float64
 }
 
-func TestStub() []Result {
+// func TestStub() []Result {
 
-	var xmtr_power int16 = 1000
-	var feedline_length int16 = 73
-	var duty_cycle float64 = 0.5
-	var per_30 float64 = 0.5
+// 	var xmtr_power int16 = 1000
+// 	var feedline_length int16 = 73
+// 	var duty_cycle float64 = 0.5
+// 	var per_30 float64 = 0.5
 
-	c1 := CableValues{
-		K1: 0.122290,
-		K2: 0.000260,
-	}
+// 	c1 := CableValues{
+// 		K1: 0.122290,
+// 		K2: 0.000260,
+// 	}
 
-	all_frequency_values := []FrequencyValues{
-		{
-			Freq:    7.3,
-			SWR:     2.25,
-			GainDBI: 1.5,
-		},
-		{
-			Freq:    14.35,
-			SWR:     1.35,
-			GainDBI: 1.5,
-		},
-		{
-			Freq:    18.1,
-			SWR:     3.7,
-			GainDBI: 1.5,
-		},
-		{
-			Freq:    21.45,
-			SWR:     4.45,
-			GainDBI: 1.5,
-		},
-		{
-			Freq:    24.99,
-			SWR:     4.1,
-			GainDBI: 1.5,
-		},
-		{
-			Freq:    29.7,
-			SWR:     2.18,
-			GainDBI: 4.5,
-		},
-	}
+// 	all_frequency_values := []FrequencyValues{
+// 		{
+// 			Freq:    7.3,
+// 			SWR:     2.25,
+// 			GainDBI: 1.5,
+// 		},
+// 		{
+// 			Freq:    14.35,
+// 			SWR:     1.35,
+// 			GainDBI: 1.5,
+// 		},
+// 		{
+// 			Freq:    18.1,
+// 			SWR:     3.7,
+// 			GainDBI: 1.5,
+// 		},
+// 		{
+// 			Freq:    21.45,
+// 			SWR:     4.45,
+// 			GainDBI: 1.5,
+// 		},
+// 		{
+// 			Freq:    24.99,
+// 			SWR:     4.1,
+// 			GainDBI: 1.5,
+// 		},
+// 		{
+// 			Freq:    29.7,
+// 			SWR:     2.18,
+// 			GainDBI: 4.5,
+// 		},
+// 	}
 
-	var uncontrolled_safe_distances []Result
+// 	var uncontrolled_safe_distances []Result
 
-	for _, f := range all_frequency_values {
-		distance := CalculateUncontrolledSafeDistance(f, c1, xmtr_power, feedline_length, duty_cycle, per_30)
+// 	for _, f := range all_frequency_values {
+// 		distance := CalculateUncontrolledSafeDistance(f, c1, xmtr_power, feedline_length, duty_cycle, per_30)
 
-		uncontrolled_safe_distances = append(uncontrolled_safe_distances, Result{Frequency: f.Freq, Distance: distance})
-	}
+// 		uncontrolled_safe_distances = append(uncontrolled_safe_distances, Result{Frequency: f.Freq, Distance: distance})
+// 	}
 
-	return uncontrolled_safe_distances
-}
+// 	return uncontrolled_safe_distances
+// }
 
 type CableValues struct {
 	K1 float64
@@ -78,7 +78,12 @@ type FrequencyValues struct {
 }
 
 func CalculateUncontrolledSafeDistance(freq_values FrequencyValues, cable_values CableValues, transmitter_power int16,
-	feedline_length int16, duty_cycle float64, uncontrolled_percentage_30_minutes float64) float64 {
+	feedline_length int16, duty_cycle float64, uncontrolled_percentage_30_minutes float64) (Result, error) {
+
+	err := ValidateParameters(freq_values, cable_values, transmitter_power, feedline_length, duty_cycle, uncontrolled_percentage_30_minutes)
+	if err != nil {
+		return Result{0, 0}, err
+	}
 
 	gamma := CalculateReflectionCoefficient(freq_values)
 
@@ -104,7 +109,9 @@ func CalculateUncontrolledSafeDistance(freq_values FrequencyValues, cable_values
 
 	gain_decimal := math.Pow(10, freq_values.GainDBI/10)
 
-	return math.Sqrt((0.219 * uncontrolled_average_pep * gain_decimal) / mpe_s)
+	distance := math.Sqrt((0.219 * uncontrolled_average_pep * gain_decimal) / mpe_s)
+
+	return Result{Frequency: freq_values.Freq, Distance: distance}, nil
 }
 
 func CalculateReflectionCoefficient(freq_values FrequencyValues) float64 {
