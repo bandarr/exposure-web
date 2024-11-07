@@ -2,7 +2,6 @@ package main
 
 import (
 	"exposure-web/rfexposure"
-	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -17,27 +16,50 @@ func formHandler(c *gin.Context) {
 	})
 }
 
+func main() {
+	r := gin.Default()
+
+	r.SetHTMLTemplate(template.Must(template.ParseFiles("form.html")))
+
+	r.GET("/", formHandler)
+	r.POST("/submit", submitHandler)
+	r.Static("/static", "./static")
+
+	r.Run(":8080") // listen and serve on 0.0.0.0:8080
+}
+
+type FormInput struct {
+	Frequency                       string `form:"frequency" binding:"required"`
+	SWR                             string `form:"swr" binding:"required"`
+	GainDBI                         string `form:"gaindbi" binding:"required"`
+	K1                              string `form:"k1" binding:"required"`
+	K2                              string `form:"k2" binding:"required"`
+	TransmitterPower                string `form:"transmitter_power" binding:"required"`
+	FeedlineLength                  string `form:"feedline_length" binding:"required"`
+	DutyCycle                       string `form:"duty_cycle" binding:"required"`
+	UncontrolledPercentage30Minutes string `form:"uncontrolled_percentage_30_minutes" binding:"required"`
+}
+
 func submitHandler(c *gin.Context) {
-	if c.Request.Method != http.MethodPost {
-		c.JSON(http.StatusMethodNotAllowed, gin.H{"error": "Invalid request method"})
+	var input FormInput
+	if err := c.ShouldBind(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	// Parse form data
-	frequency := c.PostForm("frequency")
-	swr := c.PostForm("swr")
-	gaindbi := c.PostForm("gaindbi")
-	k1 := c.PostForm("k1")
-	fmt.Println(k1)
-	k2 := c.PostForm("k2")
-	transmitter_power := c.PostForm("transmitter_power")
-	feedline_length := c.PostForm("feedline_length")
-	duty_cycle := c.PostForm("duty_cycle")
-	uncontrolled_percentage_30_minutes := c.PostForm("uncontrolled_percentage_30_minutes")
+	frequency := input.Frequency
+	swr := input.SWR
+	gaindbi := input.GainDBI
+	k1 := input.K1
+	k2 := input.K2
+	transmitter_power := input.TransmitterPower
+	feedline_length := input.FeedlineLength
+	duty_cycle := input.DutyCycle
+	uncontrolled_percentage_30_minutes := input.UncontrolledPercentage30Minutes
 
 	// Convert cable values to appropriate types
 	k_1, err := strconv.ParseFloat(k1, 64)
-	fmt.Println(err)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid k1 value"})
 		return
@@ -109,17 +131,4 @@ func submitHandler(c *gin.Context) {
 
 	// Return the result
 	c.JSON(http.StatusOK, gin.H{"distance": distance})
-
-}
-
-func main() {
-	r := gin.Default()
-
-	r.SetHTMLTemplate(template.Must(template.ParseFiles("form.html")))
-
-	r.GET("/", formHandler)
-	r.POST("/submit", submitHandler)
-	r.Static("/static", "./static")
-
-	r.Run(":8080") // listen and serve on 0.0.0.0:8080
 }
