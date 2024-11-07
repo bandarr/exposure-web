@@ -57,8 +57,12 @@
 
   <h2>Uncontrolled Safe Distance:</h2>
   <ul>
+    {{if .result}}
     {{range .result}}
     <li>Frequency: {{.Frequency}}, Distance: {{.Distance}}</li>
+    {{end}}
+    {{else}}
+    <li>No results to display</li>
     {{end}}
   </ul>
 </body>
