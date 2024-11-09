@@ -132,6 +132,7 @@ func submitHandler(c *gin.Context) {
 		return
 	}
 
+	//TODO:  Add input parameters to the results page
 	c.HTML(http.StatusOK, "results.html", gin.H{
 		"Frequency": result.Frequency,
 		"Distance":  result.Distance,
