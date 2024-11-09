@@ -136,7 +136,4 @@ func submitHandler(c *gin.Context) {
 		"Frequency": result.Frequency,
 		"Distance":  result.Distance,
 	})
-
-	// Return the result
-	//c.JSON(http.StatusOK, gin.H{"result": result})
 }
