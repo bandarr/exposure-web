@@ -23,8 +23,8 @@
       </div>
       <h3>Frequency Values</h3>
       <div class="form-group">
-        <label for="freq">Frequency:</label>
-        <input type="text" id="freq" name="freq">
+        <label for="frequency">Frequency:</label>
+        <input type="text" id="frequency" name="frequency">
       </div>
       <div class="form-group">
         <label for="swr">SWR:</label>
@@ -36,35 +36,24 @@
       </div>
       <h3>Additional Parameters</h3>
       <div class="form-group">
-        <label for="transmitter_power">Transmitter Power:</label>
-        <input type="text" id="transmitter_power" name="transmitter_power">
+        <label for="transmitterpower">Transmitter Power:</label>
+        <input type="text" id="transmitterpower" name="transmitterpower">
       </div>
       <div class="form-group">
-        <label for="feedline_length">Feedline Length:</label>
-        <input type="text" id="feedline_length" name="feedline_length">
+        <label for="feedlinelength">Feedline Length:</label>
+        <input type="text" id="feedlinelength" name="feedlinelength">
       </div>
       <div class="form-group">
-        <label for="duty_cycle">Duty Cycle:</label>
-        <input type="text" id="duty_cycle" name="duty_cycle">
+        <label for="dutycycle">Duty Cycle:</label>
+        <input type="text" id="dutycycle" name="dutycycle">
       </div>
       <div class="form-group">
-        <label for="uncontrolled_percentage_30_minutes">Uncontrolled Percentage (30 minutes):</label>
-        <input type="text" id="uncontrolled_percentage_30_minutes" name="uncontrolled_percentage_30_minutes">
+        <label for="uncontrolledpercentage30minutes">Uncontrolled Percentage (30 minutes):</label>
+        <input type="text" id="uncontrolledpercentage30minutes" name="uncontrolledpercentage30minutes">
       </div>
       <button type="submit">Submit</button>
     </form>
   </div>
-
-  <h2>Uncontrolled Safe Distance:</h2>
-  <ul>
-    {{if .result}}
-    {{range .result}}
-    <li>Frequency: {{.Frequency}}, Distance: {{.Distance}}</li>
-    {{end}}
-    {{else}}
-    <li>No results to display</li>
-    {{end}}
-  </ul>
 </body>
 
 </html>

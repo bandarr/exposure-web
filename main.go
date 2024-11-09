@@ -2,6 +2,7 @@ package main
 
 import (
 	"exposure-web/rfexposure"
+	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -16,7 +17,7 @@ func formHandler(c *gin.Context) {
 func main() {
 	r := gin.Default()
 
-	r.SetHTMLTemplate(template.Must(template.ParseFiles("form.html")))
+	r.SetHTMLTemplate(template.Must(template.ParseFiles("form.html", "results.html")))
 
 	r.GET("/", formHandler)
 	r.POST("/submit", submitHandler)
@@ -26,15 +27,15 @@ func main() {
 }
 
 type FormInput struct {
-	Frequency                       string `form:"freq" binding:"required"`
+	Frequency                       string `form:"frequency" binding:"required"`
 	SWR                             string `form:"swr" binding:"required"`
 	GainDBI                         string `form:"gaindbi" binding:"required"`
 	K1                              string `form:"k1" binding:"required"`
 	K2                              string `form:"k2" binding:"required"`
-	TransmitterPower                string `form:"transmitter_power" binding:"required"`
-	FeedlineLength                  string `form:"feedline_length" binding:"required"`
-	DutyCycle                       string `form:"duty_cycle" binding:"required"`
-	UncontrolledPercentage30Minutes string `form:"uncontrolled_percentage_30_minutes" binding:"required"`
+	TransmitterPower                string `form:"transmitterpower" binding:"required"`
+	FeedlineLength                  string `form:"feedlinelength" binding:"required"`
+	DutyCycle                       string `form:"dutycycle" binding:"required"`
+	UncontrolledPercentage30Minutes string `form:"uncontrolledpercentage30minutes" binding:"required"`
 }
 
 func submitHandler(c *gin.Context) {
@@ -75,7 +76,7 @@ func submitHandler(c *gin.Context) {
 	// Convert frequency values to appropriate types
 	freq, err := strconv.ParseFloat(frequency, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid frequency value"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid frequency value %f", freq)})
 		return
 	}
 
@@ -131,6 +132,11 @@ func submitHandler(c *gin.Context) {
 		return
 	}
 
+	c.HTML(http.StatusOK, "results.html", gin.H{
+		"Frequency": result.Frequency,
+		"Distance":  result.Distance,
+	})
+
 	// Return the result
-	c.JSON(http.StatusOK, gin.H{"result": result})
+	//c.JSON(http.StatusOK, gin.H{"result": result})
 }
